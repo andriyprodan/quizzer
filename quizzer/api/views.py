@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from rest_framework import viewsets
+from rest_framework.views import APIView
 
 from .models import Quiz, Question, Answer
 from .serializers import QuizSerializer, QuestionSerializer, AnswerSerializer
@@ -16,3 +17,8 @@ class QuestionViewSet(viewsets.ModelViewSet):
 class AnswerViewSet(viewsets.ModelViewSet):
   queryset = Answer.objects.all()
   serializer_class = AnswerSerializer
+
+class CreateQuizView(APIView):
+
+  def post(self, request, format=None):
+    print(request.data)
