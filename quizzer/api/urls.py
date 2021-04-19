@@ -8,7 +8,7 @@ router.register(r'questions', views.QuestionViewSet)
 router.register(r'answers', views.AnswerViewSet)
 
 urlpatterns = [
-  path('create-quiz/', views.CreateQuizView.as_view()),
+  path('create-quiz', views.CreateQuizView.as_view()),
 ]
 
 urlpatterns += router.urls

@@ -1,9 +1,17 @@
 from django.shortcuts import render
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from rest_framework.views import APIView
+from rest_framework.response import Response
 
 from .models import Quiz, Question, Answer
-from .serializers import QuizSerializer, QuestionSerializer, AnswerSerializer
+from .serializers import (
+  CreateQuizSerializer,
+  CreateQuestionSerializer,
+  CreateAnswerSerializer,
+  QuizSerializer, 
+  QuestionSerializer, 
+  AnswerSerializer,
+)
 
 # Create your views here.
 class QuizViewSet(viewsets.ModelViewSet):
@@ -19,6 +27,14 @@ class AnswerViewSet(viewsets.ModelViewSet):
   serializer_class = AnswerSerializer
 
 class CreateQuizView(APIView):
+  serializer_class = CreateQuizSerializer
 
   def post(self, request, format=None):
     print(request.data)
+    serializer = CreateQuizSerializer(data=request.data)
+    if serializer.is_valid():
+      serializer.save()
+      return Response(True, status=status.HTTP_200_OK)
+
+    return Response({'Bad Request': 'Invalid data...'}, status=status.HTTP_400_BAD_REQUEST)
+

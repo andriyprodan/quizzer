@@ -29,18 +29,25 @@ export default function Question(props) {
   }
 
   function handleTextChange(e) {
-    props.TextChangeCallback(props.id, e.target.value)
+    props.TextChangeCallback(props.id, e.target.value);
   }
 
-  const answerComponents = props.answers.length ? props.answers.map((value, key) => (
-    <Answer
-      key={key}
-      id={key}
-      text={value}
-      TextChangeCallback={handleAnswerTextChange}
-      isCreate={true}
-    />
-  )) : []
+  function handleCorrectAnswerChange(answerId) {
+    props.CorrectAnswerChangeCallBack(props.id, answerId);
+  }
+
+  const answerComponents = props.answers.length ? props.answers.map((value, key) => {
+    return (
+        <Answer
+          key={key}
+          id={key}
+          {...value}
+          TextChangeCallback={handleAnswerTextChange}
+          CorrectAnswerChangeCallback={handleCorrectAnswerChange}
+          isCreate={true}
+        />
+    )
+  }) : []
 
   function renderCreateQuestionForm() {
     return (
@@ -59,24 +66,30 @@ export default function Question(props) {
             label="Question Text"
             variant="outlined"
             onChange={handleTextChange}
-            error={ props.errors.includes('question_text_error') }
-            helperText={ props.errors.includes('question_text_error') ? "Please, enter Question text" : '' }
+            error={ props.errors && props.errors.includes('question_text_error') }
+            helperText={ props.errors && props.errors.includes('question_text_error') ? "Please, enter Question text" : '' }
           />
         </Grid>
 
         { props.answers.length ? renderAnswersTitle() : ""}
-
-        <Grid 
-          container 
-          justify="space-around" 
-          spacing={1} 
-          className={props.errors.includes('answers_number_error') ? "answers-container error" : "answers-container"}
+        
+        <Grid
+          container
+          justify="space-around"
+          name="correct-answer"
+          className={
+            props.errors &&
+            (props.errors.includes('answers_number_error') || 
+            props.errors.includes('correct_answer_error')) ? 
+            "answers-container error" : 
+            "answers-container"
+          }
         >
           { answerComponents }
         </Grid>
-        {props.errors.includes('answers_number_error') ? (<Typography variant='h6' compact='h6' color="error">Please, enter at least 2 answers</Typography>) : ""}
+        {props.errors && props.errors.includes('answers_number_error') ? (<Typography variant='h6' compact='h6' color="error">Please, enter at least 2 answers</Typography>) : ""}
+        {props.errors && props.errors.includes('correct_answer_error') ? (<Typography variant='h6' compact='h6' color="error">Please, choose the correct answer</Typography>) : ""}
         
-
         <Grid item xs={12} align="center">
           <Button color="default" onClick={handleAddAnswerButtonPressed}>Add answer</Button>
         </Grid>

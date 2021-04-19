@@ -14,6 +14,10 @@ export default function Answer(props) {
     props.TextChangeCallback(props.id, e.target.value);
   }
 
+  function handleCorrectAnswerChange() {
+    props.CorrectAnswerChangeCallback(props.id)
+  }
+
   function renderCreateAnswerForm() {
     return (
       <Grid item xs={5} align="center">
@@ -27,6 +31,13 @@ export default function Answer(props) {
           label="Answer Text"
           variant="outlined"
           onChange={handleTextChange}
+        />
+        {/* For correct answer */}
+        <input 
+          name="correct-answer"
+          type="radio"
+          value={props.id}
+          onChange={handleCorrectAnswerChange}
         />
       </Grid>
     );

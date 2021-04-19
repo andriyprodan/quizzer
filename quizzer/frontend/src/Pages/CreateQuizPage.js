@@ -5,19 +5,19 @@ import Question from "../Components/Question"
 
 export default function CreateQuizPage(props) {
   const [title, setTitle] = useState('');
-  const [questions, setQuestions] = useState([{ 'text': '', 'answers': ['', ''], 'errors': [] }]);
+  const [questions, setQuestions] = useState([{ 'text': '', 'answers': [{'text': ''}, {'text': ''}], 'errors': [] }]);
 
   function handleQuizTitleChange(e) {
     setTitle(e.target.value);
   }
 
   function handleAddQuestionButtonPressed() {
-    setQuestions(questions.concat({ 'text': '', 'answers': ['', ''], 'errors': [] }));
+    setQuestions(questions.concat({ 'text': '', 'answers': [{'text': ''}, {'text': ''}], 'errors': [] }));
   }
 
   function handleAddAnswerButtonPressed(questionId) {
     let tmp = [...questions];
-    tmp[questionId]['answers'].push('');
+    tmp[questionId]['answers'].push({'text': ''});
     setQuestions(tmp);
   }
 
@@ -29,8 +29,28 @@ export default function CreateQuizPage(props) {
 
   function handleAnswerTextChange(questionId, answerId, answerText) {
     let tmp = [...questions];
-    tmp[questionId]['answers'][answerId] = answerText
+    tmp[questionId]['answers'][answerId]['text'] = answerText
     setQuestions(tmp);
+  }
+
+  function handleCorrectAnswerChange(questionId, answerId) {
+    let tmp = [...questions];
+    tmp[questionId]['correct_answer'] = answerId
+    setQuestions(tmp);
+  }
+
+  function addOrRemoveError(errors, errorType, addError) {
+    if (addError) {
+      if (!errors.includes(errorType)) {
+        errors.push(errorType);
+      } 
+    } else if (errors.includes(errorType)) {
+      for (var i = errors.length-1; i >= 0; i--) {
+        if (errors[i] === errorType) {
+          errors.splice(i, 1)
+        }
+      }
+    }
   }
 
   function validateInput() {
@@ -39,27 +59,18 @@ export default function CreateQuizPage(props) {
       let tmp = [...questions];
       let errors = tmp[index]['errors'];
       
-      if (!question['text']) {
-        if (!errors.includes('question_text_error')) {
-          errors.push('question_text_error');
-        }
-      } else if (errors.includes('question_text_error')) {
-        errors = errors.filter(e => e !== 'question_text_error')
-      }
-
+      addOrRemoveError(errors, 'question_text_error', !question['text'])
+      
       let numOfAnswersWithText = 0
       question['answers'].map(answer => {
-        if (answer !== '') {
+        if (answer['text'] !== '') {
           numOfAnswersWithText++;
         }
       })
-      if (numOfAnswersWithText < 2) {
-        if (!errors.includes('answers_number_error')) {
-          errors.push('answers_number_error');
-        }
-      } else if (errors.includes('answers_number_error')) {
-        errors = errors.filter(e => e !== 'answers_number_error')
-      }
+      addOrRemoveError(errors, 'answers_number_error', numOfAnswersWithText < 2)
+      
+      addOrRemoveError(errors, 'correct_answer_error', question['correct_answer'] == null)
+
       tmp[index]['errors'] = errors;
       setQuestions(tmp);
       
@@ -72,7 +83,12 @@ export default function CreateQuizPage(props) {
 
   function handleCreateQuizButtonPressed() {
     if (validateInput()) {
-      console.log(questions)
+      let tmp = [...questions];
+      for (var i = 0; i < tmp.length; i++) {
+        delete tmp[i]['errors'];
+      }
+      setQuestions(tmp);
+
       const requestOptions = {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
@@ -80,10 +96,10 @@ export default function CreateQuizPage(props) {
           title: title,
           questions: questions
         })
-      }
+      };
       fetch('/api/create-quiz', requestOptions)
         .then((response) => response.json())
-        .then((data) => console.log('success'))
+        .then((data) => console.log('success'));
     }
   }
 
@@ -92,13 +108,12 @@ export default function CreateQuizPage(props) {
       <Question
         key={key}
         id={key}
-        text={value['text']}
-        answers={value['answers']}
-        errors={value['errors'] ? value['errors'] : ""}
+        {...value}
         isCreate={true}
         TextChangeCallback={handleQuestionTextChange}
         AnswerTextChangeCallback={handleAnswerTextChange}
         AddAnswerButtonCallback={handleAddAnswerButtonPressed}
+        CorrectAnswerChangeCallBack={handleCorrectAnswerChange}
       />
     )
   }) : []
