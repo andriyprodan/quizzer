@@ -1,14 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Grid, TextField } from "@material-ui/core";
+import { Grid, TextField, Button } from "@material-ui/core";
 
 export default function Answer(props) {
-  const [isCreate, setIsCreate]  = useState(false);
-  
-  useEffect(()=> {
-    if (props.isCreate) {
-      setIsCreate(props.isCreate)
-    }
-  })
 
   function handleTextChange(e) {
     props.TextChangeCallback(props.id, e.target.value);
@@ -34,7 +27,7 @@ export default function Answer(props) {
         />
         {/* For correct answer */}
         <input 
-          name="correct-answer"
+          name={"q" + props.questionId + "-correct-answer"}
           type="radio"
           value={props.id}
           onChange={handleCorrectAnswerChange}
@@ -43,9 +36,19 @@ export default function Answer(props) {
     );
   }
 
+  function renderAnswer() {
+    return (
+      <Grid item xs={5} align="center">
+        <Button variant="outlined" disableElevation>
+          {props.text}
+        </Button>
+      </Grid>
+    );
+  }
+
   return (
     <>
-      { isCreate ? renderCreateAnswerForm() : ""}
+      { props.isCreate ? renderCreateAnswerForm() : renderAnswer()}
     </>
   )
 }

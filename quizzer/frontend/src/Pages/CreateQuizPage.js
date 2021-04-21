@@ -99,7 +99,9 @@ export default function CreateQuizPage(props) {
       };
       fetch('/api/create-quiz', requestOptions)
         .then((response) => response.json())
-        .then((data) => console.log('success'));
+        .then((data) => {
+          props.history.push(`/quiz/${data.question_id}`)
+        });
     }
   }
 

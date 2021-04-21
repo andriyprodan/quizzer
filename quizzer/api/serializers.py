@@ -32,21 +32,22 @@ class CreateQuizSerializer(serializers.ModelSerializer):
           Answer.objects.create(question=question, **answer_data)
     return quiz
 
+
+class AnswerSerializer(serializers.HyperlinkedModelSerializer):
+  class Meta:
+    model = Answer
+    fields = ['id', 'text']
+
+class QuestionSerializer(serializers.HyperlinkedModelSerializer):
+  answers = serializers.SlugRelatedField(many=True, read_only=True, slug_field='text')
+
+  class Meta:
+    model = Question
+    fields = ['id', 'text', 'answers', 'correct_answer']
+
 class QuizSerializer(serializers.HyperlinkedModelSerializer):
   questions = serializers.HyperlinkedRelatedField(many=True, view_name='question-detail', read_only=True)
 
   class Meta:
     model = Quiz
     fields = ['url', 'id', 'title', 'questions']
-
-class QuestionSerializer(serializers.HyperlinkedModelSerializer):
-  answers = serializers.HyperlinkedRelatedField(many=True, view_name='answer-detail', read_only=True)
-
-  class Meta:
-    model = Question
-    fields = ['url', 'id', 'text', 'answers', 'correct_answer']
-
-class AnswerSerializer(serializers.HyperlinkedModelSerializer):
-  class Meta:
-    model = Answer
-    fields = ['url', 'id', 'text']

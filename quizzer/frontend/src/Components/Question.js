@@ -4,13 +4,6 @@ import { Grid, Button, TextField, Typography } from "@material-ui/core";
 import Answer from "./Answer"
 
 export default function Question(props) {
-  const [isCreate, setIsCreate]  = useState(false);
-  
-  useEffect(()=> {
-    if (props.isCreate) {
-      setIsCreate(props.isCreate)
-    }
-  })
 
   function handleAnswerTextChange(answerId, answerText) {
     props.AnswerTextChangeCallback(props.id, answerId, answerText)
@@ -36,18 +29,34 @@ export default function Question(props) {
     props.CorrectAnswerChangeCallBack(props.id, answerId);
   }
 
-  const answerComponents = props.answers.length ? props.answers.map((value, key) => {
-    return (
-        <Answer
-          key={key}
-          id={key}
-          {...value}
-          TextChangeCallback={handleAnswerTextChange}
-          CorrectAnswerChangeCallback={handleCorrectAnswerChange}
-          isCreate={true}
-        />
-    )
-  }) : []
+  let answerComponents = [];
+  if (props.answers.length) {
+    if (props.isCreate) {
+      answerComponents = props.answers.map((value, key) => {
+        return (
+          <Answer
+            key={key}
+            id={key}
+            questionId={props.id}
+            {...value}
+            TextChangeCallback={handleAnswerTextChange}
+            CorrectAnswerChangeCallback={handleCorrectAnswerChange}
+            isCreate={true}
+          />
+        );
+      });
+    } else {
+      answerComponents = props.answers.map((value, key) => {
+        return (
+          <Answer
+            key={key}
+            id={key}
+            text={value}
+          />
+        );
+      });
+    }
+  }
 
   function renderCreateQuestionForm() {
     return (
@@ -76,11 +85,8 @@ export default function Question(props) {
         <Grid
           container
           justify="space-around"
-          name="correct-answer"
           className={
-            props.errors &&
-            (props.errors.includes('answers_number_error') || 
-            props.errors.includes('correct_answer_error')) ? 
+            props.errors ? 
             "answers-container error" : 
             "answers-container"
           }
@@ -97,9 +103,24 @@ export default function Question(props) {
     );
   }
 
+  function renderQuestion() {
+    return (
+      <>
+        <Grid item xs={12}>
+          <Typography variant="h3" compact="h3">
+            {props.text}
+          </Typography>
+        </Grid>
+        <Grid container justify="space-around">
+          { answerComponents }
+        </Grid>
+      </>
+    );
+  }
+
   return (
     <>
-      { isCreate ? renderCreateQuestionForm() : ""}
+      { props.isCreate ? renderCreateQuestionForm() : renderQuestion()}
     </>
   )
 }

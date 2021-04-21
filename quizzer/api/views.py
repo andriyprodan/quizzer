@@ -34,7 +34,6 @@ class CreateQuizView(APIView):
     serializer = CreateQuizSerializer(data=request.data)
     if serializer.is_valid():
       serializer.save()
-      return Response(True, status=status.HTTP_200_OK)
+      return Response({'question_id': serializer.instance.id}, status=status.HTTP_200_OK)
 
     return Response({'Bad Request': 'Invalid data...'}, status=status.HTTP_400_BAD_REQUEST)
-
