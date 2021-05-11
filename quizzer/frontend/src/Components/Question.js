@@ -13,6 +13,10 @@ export default function Question(props) {
     props.AddAnswerButtonCallback(props.id)
   }
 
+  function handleAnswerChoosing(answerId) {
+    props.AnswerChoosingCallback(answerId);
+  }
+
   function renderAnswersTitle() {
     return (
       <Grid item xs={8} align="center">
@@ -37,7 +41,7 @@ export default function Question(props) {
           <Answer
             key={key}
             id={key}
-            questionId={props.id}
+            questionKey={props.id}
             {...value}
             TextChangeCallback={handleAnswerTextChange}
             CorrectAnswerChangeCallback={handleCorrectAnswerChange}
@@ -50,8 +54,9 @@ export default function Question(props) {
         return (
           <Answer
             key={key}
-            id={key}
-            text={value}
+            id={value.id}
+            text={value.text}
+            ChooseAnswerBtnClickCallback={handleAnswerChoosing}
           />
         );
       });
@@ -86,7 +91,7 @@ export default function Question(props) {
           container
           justify="space-around"
           className={
-            props.errors ? 
+            props.length ? 
             "answers-container error" : 
             "answers-container"
           }
@@ -106,7 +111,7 @@ export default function Question(props) {
   function renderQuestion() {
     return (
       <>
-        <Grid item xs={12}>
+        <Grid item xs={12} align="center">
           <Typography variant="h3" compact="h3">
             {props.text}
           </Typography>

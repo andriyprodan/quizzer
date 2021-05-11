@@ -8,7 +8,7 @@ export default function Quiz(props) {
     const [title, setTitle] = useState('')
     const [questionUrls, setQuestionUrls] = useState([])
     const [questions, setQuestions] = useState([])
-    const [currQuestionId, setCurrQuestionId] = useState()
+    const [currQuestionKey, setCurrQuestionKey] = useState(0)
 
     let { id } = useParams();
 
@@ -21,29 +21,33 @@ export default function Quiz(props) {
             if (!response.ok) {
                 props.history.push('/');
             }
-            return response.json();  
+            return response.json(); 
         }).then((data) => {
             setTitle(data.title)
             setQuestionUrls(data.questions)
             // get first question
-            console.log(data.questions[0])
 
             return fetch(data.questions[0], requestOptions)
         }).then((response) => {
             return response.json();
         }).then((data) => {
-            setCurrQuestionId(data.id);
             let tmp = [...questions];
             tmp.push(data);
             setQuestions(tmp);
         });
     }, []);
     
-    const currQuestion = questions.find(e => e.id == currQuestionId);
-    console.log('currQuestion:', currQuestion);
+    const currQuestion = questions[currQuestionKey];
 
     if (currQuestion === undefined) {
         return <>Still loading...</>;
+    }
+
+    function handleAnswerChoosing(answerKey){
+        console.log(answerKey, currQuestionKey);
+        let tmp = [...questions];
+        tmp[currQuestionKey]['chosen_answer'] = parseInt(answerKey);
+        setQuestions(tmp);
     }
 
     return (
@@ -53,7 +57,7 @@ export default function Quiz(props) {
                     {title}
                 </Typography>
             </Grid>
-            <Question {...currQuestion} />
+            <Question {...currQuestion} AnswerChoosingCallback={handleAnswerChoosing}/>
         </Grid>
     )
 }

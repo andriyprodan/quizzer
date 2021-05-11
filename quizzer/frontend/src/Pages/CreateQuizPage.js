@@ -15,27 +15,27 @@ export default function CreateQuizPage(props) {
     setQuestions(questions.concat({ 'text': '', 'answers': [{'text': ''}, {'text': ''}], 'errors': [] }));
   }
 
-  function handleAddAnswerButtonPressed(questionId) {
+  function handleAddAnswerButtonPressed(questionKey) {
     let tmp = [...questions];
-    tmp[questionId]['answers'].push({'text': ''});
+    tmp[questionKey]['answers'].push({'text': ''});
     setQuestions(tmp);
   }
 
-  function handleQuestionTextChange(questionId, questionText) {
+  function handleQuestionTextChange(questionKey, questionText) {
     let tmp = [...questions];
-    tmp[questionId]['text'] = questionText
+    tmp[questionKey]['text'] = questionText
     setQuestions(tmp);
   }
 
-  function handleAnswerTextChange(questionId, answerId, answerText) {
+  function handleAnswerTextChange(questionKey, answerKey, answerText) {
     let tmp = [...questions];
-    tmp[questionId]['answers'][answerId]['text'] = answerText
+    tmp[questionKey]['answers'][answerKey]['text'] = answerText
     setQuestions(tmp);
   }
 
-  function handleCorrectAnswerChange(questionId, answerId) {
+  function handleCorrectAnswerChange(questionKey, answerKey) {
     let tmp = [...questions];
-    tmp[questionId]['correct_answer'] = answerId
+    tmp[questionKey]['correct_answer'] = answerKey
     setQuestions(tmp);
   }
 

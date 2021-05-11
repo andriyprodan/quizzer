@@ -27,9 +27,16 @@ class CreateQuizSerializer(serializers.ModelSerializer):
     for question_data in questions_data:
       answers_data = question_data.pop('answers')
       question = Question.objects.create(quiz=quiz, **question_data)
+      # now 'correct_answer' property from question_data is an order key (not an answer id)
+      # we need to reassign it to answer id
+      answerIds = []
       for answer_data in answers_data:
         if len(answer_data):
-          Answer.objects.create(question=question, **answer_data)
+          answer = Answer.objects.create(question=question, **answer_data)
+          answerIds.append(answer.id)
+      # assign id of the newly created answer to the correct_answer property of the question
+      question.correct_answer = answerIds[question.correct_answer]
+      question.save()
     return quiz
 
 
@@ -39,7 +46,7 @@ class AnswerSerializer(serializers.HyperlinkedModelSerializer):
     fields = ['id', 'text']
 
 class QuestionSerializer(serializers.HyperlinkedModelSerializer):
-  answers = serializers.SlugRelatedField(many=True, read_only=True, slug_field='text')
+  answers = AnswerSerializer(many=True)
 
   class Meta:
     model = Question

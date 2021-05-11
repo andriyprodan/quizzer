@@ -27,7 +27,7 @@ export default function Answer(props) {
         />
         {/* For correct answer */}
         <input 
-          name={"q" + props.questionId + "-correct-answer"}
+          name={"q" + props.questionKey + "-correct-answer"}
           type="radio"
           value={props.id}
           onChange={handleCorrectAnswerChange}
@@ -36,10 +36,20 @@ export default function Answer(props) {
     );
   }
 
+  function handleChooseAnswerBtnClick(e) {
+    props.ChooseAnswerBtnClickCallback(e.currentTarget.id)
+  }
+
   function renderAnswer() {
     return (
       <Grid item xs={5} align="center">
-        <Button variant="outlined" disableElevation>
+        <Button
+          className="answer"
+          id={props.id}
+          variant="outlined"
+          disableElevation
+          onClick={handleChooseAnswerBtnClick}
+        >
           {props.text}
         </Button>
       </Grid>
