@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Grid, Button, TextField, Typography } from "@material-ui/core";
+import { Grid, Button, TextField, Typography, Box } from "@material-ui/core";
 
 import Answer from "./Answer"
 
@@ -56,6 +56,8 @@ export default function Question(props) {
             key={key}
             id={value.id}
             text={value.text}
+            chosenAnswer={ props.chosen_answer }
+            correctAnswer={ props.correct_answer }
             ChooseAnswerBtnClickCallback={handleAnswerChoosing}
           />
         );
@@ -112,9 +114,11 @@ export default function Question(props) {
     return (
       <>
         <Grid item xs={12} align="center">
-          <Typography variant="h3" compact="h3">
-            {props.text}
-          </Typography>
+          <Box mt="1em" mb="1em">
+            <Typography className="question" variant="h3" compact="h3">
+              {props.text}
+            </Typography>
+          </Box>
         </Grid>
         <Grid container justify="space-around">
           { answerComponents }

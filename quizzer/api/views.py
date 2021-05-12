@@ -30,10 +30,15 @@ class CreateQuizView(APIView):
   serializer_class = CreateQuizSerializer
 
   def post(self, request, format=None):
-    print(request.data)
     serializer = CreateQuizSerializer(data=request.data)
     if serializer.is_valid():
       serializer.save()
       return Response({'question_id': serializer.instance.id}, status=status.HTTP_200_OK)
 
     return Response({'Bad Request': 'Invalid data...'}, status=status.HTTP_400_BAD_REQUEST)
+
+class GetCorrectAnswer(APIView):
+  def get(self, request, format=None):
+    question = Question.objects.filter(pk=request.GET.get('question_id')).get()
+
+    return Response({'correct_answer': question.correct_answer}, status=status.HTTP_200_OK)

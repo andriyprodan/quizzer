@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Grid, TextField, Button } from "@material-ui/core";
+import React from "react";
+import { Grid, TextField, Button, Box } from "@material-ui/core";
 
 export default function Answer(props) {
 
@@ -37,21 +37,31 @@ export default function Answer(props) {
   }
 
   function handleChooseAnswerBtnClick(e) {
-    props.ChooseAnswerBtnClickCallback(e.currentTarget.id)
+    if (!props.chosenAnswer) {
+      props.ChooseAnswerBtnClickCallback(e.currentTarget.id)
+    }
   }
 
   function renderAnswer() {
+    let isChosen = props.chosenAnswer == props.id;
+    let isCorrect = props.correctAnswer == props.id;
+
+    let className = isChosen ? "answer chosen" : undefined;
+    className = isCorrect ? "answer correct" : className;
     return (
       <Grid item xs={5} align="center">
-        <Button
-          className="answer"
-          id={props.id}
-          variant="outlined"
-          disableElevation
-          onClick={handleChooseAnswerBtnClick}
-        >
-          {props.text}
-        </Button>
+        <Box my=".5em">
+          <Button
+            id={props.id}
+            variant={ (isChosen || isCorrect) ? "contained" :  "outlined"}
+            className={className}
+            disableElevation={!(isChosen || isCorrect)}
+            fullWidth
+            onClick={ handleChooseAnswerBtnClick }
+          >
+            {props.text}
+          </Button>
+        </Box>
       </Grid>
     );
   }

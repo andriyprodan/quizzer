@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from "react-router-dom";
-import { Grid, Typography } from "@material-ui/core";
+import { Grid, Typography, Button, Box } from "@material-ui/core";
 
 import Question from "./Question"
 
 export default function Quiz(props) {
     const [title, setTitle] = useState('')
     const [questionUrls, setQuestionUrls] = useState([])
-    const [questions, setQuestions] = useState([])
-    const [currQuestionKey, setCurrQuestionKey] = useState(0)
+    const [correctAnswers, setCorrectAnswers] = useState(0)
+    const [currQuestion, setCurrQuestion] = useState()
 
     let { id } = useParams();
 
@@ -25,29 +25,33 @@ export default function Quiz(props) {
         }).then((data) => {
             setTitle(data.title)
             setQuestionUrls(data.questions)
-            // get first question
 
+            // get first question
             return fetch(data.questions[0], requestOptions)
         }).then((response) => {
             return response.json();
         }).then((data) => {
-            let tmp = [...questions];
-            tmp.push(data);
-            setQuestions(tmp);
+            setCurrQuestion(data);
         });
     }, []);
     
-    const currQuestion = questions[currQuestionKey];
-
     if (currQuestion === undefined) {
         return <>Still loading...</>;
     }
 
-    function handleAnswerChoosing(answerKey){
-        console.log(answerKey, currQuestionKey);
-        let tmp = [...questions];
-        tmp[currQuestionKey]['chosen_answer'] = parseInt(answerKey);
-        setQuestions(tmp);
+    function handleAnswerChoosing(answerId){
+        let chosen_answer = parseInt(answerId);
+        let requestOptions = {
+            method: 'GET',
+            headers: {'Content-Type': 'application/json'}
+        }
+        fetch(`/api/get-correct-answer?question_id=${currQuestion.id}`, requestOptions)
+        .then((response) => {
+            return response.json();
+        }).then((data) => {
+            let correct_answer = data['correct_answer'];
+            setCurrQuestion({...currQuestion, 'chosen_answer': chosen_answer, 'correct_answer': correct_answer});
+        })
     }
 
     return (
@@ -58,6 +62,12 @@ export default function Quiz(props) {
                 </Typography>
             </Grid>
             <Question {...currQuestion} AnswerChoosingCallback={handleAnswerChoosing}/>
+            
+            <Grid item xs={12} align="center">
+                <Box mt="1.5em">
+                    { currQuestion['chosen_answer'] && (questionUrls.length-1 !== currQuestion.id) ? <Button variant="contained" color="primary">Next Question</Button> : ""}
+                </Box>
+            </Grid>
         </Grid>
     )
 }

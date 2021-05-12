@@ -7,3 +7,15 @@
   border: 1px solid red;
   border-radius: 10px;
 }
+
+.question {
+  margin: 1em 0;
+}
+
+.MuiButtonBase-root.answer.chosen {
+  background-color: rgb(220, 0, 78);
+}
+
+.MuiButtonBase-root.answer.correct {
+  background-color: #4caf50;
+}

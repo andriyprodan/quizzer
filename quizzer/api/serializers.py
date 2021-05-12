@@ -50,7 +50,7 @@ class QuestionSerializer(serializers.HyperlinkedModelSerializer):
 
   class Meta:
     model = Question
-    fields = ['id', 'text', 'answers', 'correct_answer']
+    fields = ['id', 'text', 'answers']
 
 class QuizSerializer(serializers.HyperlinkedModelSerializer):
   questions = serializers.HyperlinkedRelatedField(many=True, view_name='question-detail', read_only=True)
